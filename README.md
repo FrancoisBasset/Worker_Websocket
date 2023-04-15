@@ -1,4 +1,4 @@
-# Test technique WINAMAX
+# Worker Websocket
 
 Les technologies utilisés par ce test sont :
 - Node.js (`http`, `fs`, `worker_threads`, `redis`, `websocket`, `crypto`)
