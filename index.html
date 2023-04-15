@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+	<title>Test technique WINAMAX</title>
+	<meta charset="UTF-8">
+</head>
+
+<body>
+	<h1>Test technique WINAMAX</h1>
+	<br>
+	<input type="number" id="count" min="1" />
+	<button onclick="sendBet()">send</button>
+	<br>
+	<label>Number of elements : <span id="number"></span></label>
+	<br>
+	<label>Time to process : <span id="time"></span></label>
+	<br>
+	<br>
+	<br>
+	<label id="status"></label>
+
+	<script>
+		const countElement = document.getElementById('count');
+		const numberContent = document.getElementById('number');
+		const timeElement = document.getElementById('time');
+		const statusContent = document.getElementById('status');
+
+		let time = 0;
+		const socket = new WebSocket('ws://localhost:8080', ['echo-protocol']);
+
+		socket.onmessage = function (event) {
+			const data = JSON.parse(event.data);
+
+			number.textContent = data.result.idx + '/' + countElement.value;
+			if (data.result.idx == countElement.value) {
+				time = new Date() - time;
+
+				timeElement.textContent = (time / 1000) + 's';
+				statusContent.textContent = 'Traitement terminé';
+			}
+		};
+
+		function sendBet() {
+			const count = parseInt(countElement.value);
+			if (isNaN(count) || count <= 0) {
+				alert('Le count doit être supérieur à 0');
+				return;
+			}
+
+			time = new Date();
+
+			socket.send(JSON.stringify({
+				command: 'enqueue',
+				count: count,
+				mid: crypto.randomUUID()
+			}));
+
+			timeElement.textContent = 'processing';
+			statusContent.textContent = 'En cours de traitement';
+		}
+	</script>
+</body>
+
+</html>
